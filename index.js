@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const authenticateApiKey = require("./middleware");
 
 const app = express();
 require("dotenv").config();
@@ -9,6 +10,9 @@ app.use(express.json());
 app.use(cors({
   origin: "*"
 }));
+
+// Use the API key middleware for all routes
+app.use(authenticateApiKey);
 
 
 // Models (Structs)
@@ -127,7 +131,7 @@ const formatResponse = (status, message, data) => ({
 
 const findLastIndex = (array) => {
   return array.length ? array[array.length - 1].id : 0;
-}
+};
 
 
 // GET chats by user ID (List of chats that the user is involved in)
