@@ -8,7 +8,7 @@ const authenticateApiKey = (req, res, next) => {
   if (requestApiKey === apiKey) {
     next();
   } else {
-    res.status(403).json({ status: 'error', message: 'Forbidden: Invalid API Key' });
+    res.status(403).json({ status: 'error', message: 'Forbidden: Unauthorized' });
   }
 };
 
