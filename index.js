@@ -86,13 +86,19 @@ let messages = [
   },
 ];
 
+// Utility function to format responses
+const formatResponse = (status, message, data) => ({
+  status,
+  message,
+  data,
+});
 
 // GET chats by user ID (List of chats that the user is involved in)
 app.get("/chats/:userId", (req, res) => {
   const userChats = chats.filter((chat) =>
     chat.participants.includes(req.params.userId)
   );
-  res.json(userChats);
+  res.json(formatResponse("success", "Chats retrieved successfully", userChats));
 });
 
 // GET messages by chat ID (Messages within a specific chat)
@@ -100,7 +106,7 @@ app.get("/messages/:chatId", (req, res) => {
   const chatMessages = messages.filter(
     (message) => message.chatId === req.params.chatId
   );
-  res.json(chatMessages);
+  res.json(formatResponse("success", "Messages retrieved successfully", chatMessages));
 });
 
 // POST a new message (Add a message to a chat by a specific user)
@@ -114,7 +120,7 @@ app.post("/messages/:userId/:chatId", (req, res) => {
     updatedAt: new Date(),
   };
   messages.push(newMessage);
-  res.json(newMessage);
+  res.status(201).json(formatResponse("success", "Message created successfully", newMessage));
 });
 
 // PUT a message by message ID (Edit a specific message)
@@ -123,9 +129,9 @@ app.put("/messages/:messageId", (req, res) => {
   if (message) {
     message.content = req.body.content;
     message.updatedAt = new Date();
-    res.json(message);
+    res.json(formatResponse("success", "Message updated successfully", message));
   } else {
-    res.status(404).json({ error: "Message not found" });
+    res.status(404).json(formatResponse("error", "Message not found", null));
   }
 });
 
@@ -134,15 +140,14 @@ app.delete("/messages/:messageId", (req, res) => {
   const initialLength = messages.length;
   messages = messages.filter((message) => message.id != req.params.messageId);
   if (messages.length < initialLength) {
-    res.json({ message: "Message deleted" });
+    res.json(formatResponse("success", "Message deleted successfully", null));
   } else {
-    res.status(404).json({ error: "Message not found" });
+    res.status(404).json(formatResponse("error", "Message not found", null));
   }
 });
 
-
 // Start the server
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log("Server is running on port " + PORT);
 });
