@@ -131,7 +131,7 @@ const findLastIndex = (array) => {
 
 
 // GET chats by user ID (List of chats that the user is involved in)
-app.get("/chats/:userId", (req, res) => {
+app.get("/api/chats/:userId", (req, res) => {
   const userChats = chats.filter((chat) =>
     chat.participants.includes(req.params.userId)
   );
@@ -139,7 +139,7 @@ app.get("/chats/:userId", (req, res) => {
 });
 
 // GET messages by chat ID (Messages within a specific chat)
-app.get("/messages/:chatId", (req, res) => {
+app.get("/api/messages/:chatId", (req, res) => {
   const chatMessages = messages.filter(
     (message) => message.chatId === req.params.chatId
   );
@@ -147,7 +147,7 @@ app.get("/messages/:chatId", (req, res) => {
 });
 
 // POST a new message (Add a message to a chat by a specific user)
-app.post("/messages/:userId/:chatId", (req, res) => {
+app.post("/api/messages/:userId/:chatId", (req, res) => {
   const newMessage = {
     id: findLastIndex(messages) + 1,
     userId: req.params.userId,
@@ -161,7 +161,7 @@ app.post("/messages/:userId/:chatId", (req, res) => {
 });
 
 // PUT a message by message ID (Edit a specific message)
-app.put("/messages/:messageId", (req, res) => {
+app.put("/api/messages/:messageId", (req, res) => {
   const message = messages.find((message) => message.id == req.params.messageId);
   if (message) {
     message.content = req.body.content;
@@ -173,7 +173,7 @@ app.put("/messages/:messageId", (req, res) => {
 });
 
 // DELETE a message by message ID (Remove a specific message)
-app.delete("/messages/:messageId", (req, res) => {
+app.delete("/api/messages/:messageId", (req, res) => {
   const initialLength = messages.length;
   messages = messages.filter((message) => message.id != req.params.messageId);
   if (messages.length < initialLength) {
