@@ -4,6 +4,31 @@ const app = express();
 require("dotenv").config();
 app.use(express.json());
 
+
+// Models (Structs)
+const userModel = {
+  id: "string",  // Unique identifier for the user
+  name: "string" // User's name
+};
+
+const chatModel = {
+  id: "string",            // Unique identifier for the chat
+  name: "string",          // Name of the chat
+  participants: ["string"], // Array of user IDs participating in the chat
+  createdAt: new Date(),   // Date when the chat was created
+  isUpdated: false         // Boolean indicating if the chat was updated
+};
+
+const messageModel = {
+  id: "number",            // Unique identifier for the message
+  userId: "string",        // ID of the user who sent the message
+  chatId: "string",        // ID of the chat where the message was sent
+  content: "string",       // Content of the message
+  createdAt: new Date(),   // Date when the message was created
+  isUpdated: false         // Boolean indicating if the message was updated
+};
+
+
 // Dummy Data
 let users = [
   { id: "1", name: "Alice" },
@@ -17,21 +42,21 @@ let chats = [
     name: "Chat 1",
     participants: ["1", "2"], // Alice and Bob
     createdAt: new Date("2024-08-22T10:00:00Z"),
-    updatedAt: new Date("2024-08-22T10:00:00Z"),
+    isUpdated: false,
   },
   {
     id: "2",
     name: "Chat 2",
     participants: ["2", "3"], // Bob and Charlie
     createdAt: new Date("2024-08-23T11:00:00Z"),
-    updatedAt: new Date("2024-08-23T11:00:00Z"),
+    isUpdated: false,
   },
   {
     id: "3",
     name: "Chat 3",
     participants: ["1", "3"], // Alice and Charlie
     createdAt: new Date("2024-08-21T09:00:00Z"),
-    updatedAt: new Date("2024-08-21T09:00:00Z"),
+    isUpdated: false,
   },
 ];
 
@@ -42,7 +67,7 @@ let messages = [
     chatId: "1",
     content: "Hello Bob!",
     createdAt: new Date("2024-08-22T10:05:00Z"),
-    updatedAt: new Date("2024-08-22T10:05:00Z"),
+    isUpdated: false,
   },
   {
     id: 2,
@@ -50,7 +75,7 @@ let messages = [
     chatId: "1",
     content: "Hey Alice!",
     createdAt: new Date("2024-08-22T10:10:00Z"),
-    updatedAt: new Date("2024-08-22T10:10:00Z"),
+    isUpdated: false,
   },
   {
     id: 3,
@@ -58,7 +83,7 @@ let messages = [
     chatId: "2",
     content: "Hi Charlie!",
     createdAt: new Date("2024-08-23T11:05:00Z"),
-    updatedAt: new Date("2024-08-23T11:05:00Z"),
+    isUpdated: false,
   },
   {
     id: 4,
@@ -66,7 +91,7 @@ let messages = [
     chatId: "2",
     content: "What's up Bob?",
     createdAt: new Date("2024-08-23T11:15:00Z"),
-    updatedAt: new Date("2024-08-23T11:15:00Z"),
+    isUpdated: false,
   },
   {
     id: 5,
@@ -74,7 +99,7 @@ let messages = [
     chatId: "3",
     content: "Hey Charlie!",
     createdAt: new Date("2024-08-21T09:05:00Z"),
-    updatedAt: new Date("2024-08-21T09:05:00Z"),
+    isUpdated: false,
   },
   {
     id: 6,
@@ -82,16 +107,22 @@ let messages = [
     chatId: "3",
     content: "Hello Alice!",
     createdAt: new Date("2024-08-21T09:10:00Z"),
-    updatedAt: new Date("2024-08-21T09:10:00Z"),
+    isUpdated: false,
   },
 ];
 
-// Utility function to format responses
+
+// Utils
 const formatResponse = (status, message, data) => ({
   status,
   message,
   data,
 });
+
+const findLastIndex = (array) => {
+  return array.length ? array[array.length - 1].id : 0;
+}
+
 
 // GET chats by user ID (List of chats that the user is involved in)
 app.get("/chats/:userId", (req, res) => {
@@ -112,12 +143,12 @@ app.get("/messages/:chatId", (req, res) => {
 // POST a new message (Add a message to a chat by a specific user)
 app.post("/messages/:userId/:chatId", (req, res) => {
   const newMessage = {
-    id: messages.length + 1,
+    id: findLastIndex(messages) + 1,
     userId: req.params.userId,
     chatId: req.params.chatId,
     content: req.body.content,
     createdAt: new Date(),
-    updatedAt: new Date(),
+    isUpdated: false,
   };
   messages.push(newMessage);
   res.status(201).json(formatResponse("success", "Message created successfully", newMessage));
@@ -128,7 +159,7 @@ app.put("/messages/:messageId", (req, res) => {
   const message = messages.find((message) => message.id == req.params.messageId);
   if (message) {
     message.content = req.body.content;
-    message.updatedAt = new Date();
+    message.isUpdated = true;
     res.json(formatResponse("success", "Message updated successfully", message));
   } else {
     res.status(404).json(formatResponse("error", "Message not found", null));
