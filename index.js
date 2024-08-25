@@ -17,108 +17,173 @@ app.use(authenticateApiKey);
 
 // Models (Structs)
 const userModel = {
-  id: "string",  // Unique identifier for the user
-  name: "string" // User's name
+  id: "string",   // Unique identifier for the user
+  name: "string", // User's name
+  photo: "string" // URL to user's profile photo
 };
 
 const chatModel = {
   id: "string",            // Unique identifier for the chat
   name: "string",          // Name of the chat
-  participants: ["string"], // Array of user IDs participating in the chat
-  createdAt: new Date(),   // Date when the chat was created
-  isUpdated: false         // Boolean indicating if the chat was updated
+  isGroup: false,          // Boolean indicating if the chat is a group chat
+  participants: ["string"],// Array of user IDs participating in the chat
+  lastMessageId: "string", // ID of the last message in the chat
 };
 
 const messageModel = {
-  id: "number",            // Unique identifier for the message
+  id: "string",            // Unique identifier for the message
   userId: "string",        // ID of the user who sent the message
   chatId: "string",        // ID of the chat where the message was sent
   content: "string",       // Content of the message
   createdAt: new Date(),   // Date when the message was created
-  isUpdated: false         // Boolean indicating if the message was updated
+  isUpdated: false,        // Boolean indicating if the message was updated
+  readBy: ["string"],      // Array of user IDs who read the message
 };
 
 
 // Dummy Data
 let users = [
-  { id: "1", name: "Alice" },
-  { id: "2", name: "Bob" },
-  { id: "3", name: "Charlie" },
+  { id: "1", name: "Bernardus Willson", photo: "https://randomuser.me/api/portraits/men/75.jpg" },
+  { id: "2", name: "FastVisa Support", photo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQL4_9GIBfGWXeADnwpndnuJBQWkz98u_xPqQ&s" },
+  { id: "3", name: "Cameron Phillips", photo: "https://randomuser.me/api/portraits/men/74.jpg" },
+  { id: "4", name: "Elizabeth Doe", photo: "https://randomuser.me/api/portraits/women/72.jpg" },
+  { id: "5", name: "Mary Hilda", photo: "https://randomuser.me/api/portraits/women/75.jpg" },
+  { id: "6", name: "Obaidullah Amarkhil", photo: "https://randomuser.me/api/portraits/men/72.jpg" },
+  { id: "7", name: "Elizabeth Doe", photo: "https://randomuser.me/api/portraits/women/74.jpg" },
+  { id: "8", name: "Jennifer Lopez", photo: "https://randomuser.me/api/portraits/women/73.jpg" }
 ];
 
 let chats = [
   {
     id: "1",
-    name: "Chat 1",
-    participants: ["1", "2"], // Alice and Bob
-    createdAt: new Date("2024-08-22T10:00:00Z"),
-    isUpdated: false,
+    name: "FastVisa Support",
+    isGroup: false,
+    participants: ["1", "2"],
+    lastMessageId: "1"
   },
   {
     id: "2",
-    name: "Chat 2",
-    participants: ["2", "3"], // Bob and Charlie
-    createdAt: new Date("2024-08-23T11:00:00Z"),
-    isUpdated: false,
+    name: "8405-Diana SALAZAR MUNGUIA",
+    isGroup: true,
+    participants: ["1", "3", "4"],
+    lastMessageId: "3"
   },
   {
     id: "3",
-    name: "Chat 3",
-    participants: ["1", "3"], // Alice and Charlie
-    createdAt: new Date("2024-08-21T09:00:00Z"),
-    isUpdated: false,
+    name: "I-589 - AMARKHIL, Obaidullah [Affirmative Filing with ZHN]",
+    isGroup: true,
+    participants: ["1", "5", "6"],
+    lastMessageId: "9"
   },
+  {
+    id: "4",
+    name: "109220-Naturalization",
+    isGroup: true,
+    participants: ["1", "3", "7", "8"],
+    lastMessageId: "11"
+  }
 ];
 
 let messages = [
   {
-    id: 1,
-    userId: "1",
-    chatId: "1",
-    content: "Hello Bob!",
-    createdAt: new Date("2024-08-22T10:05:00Z"),
-    isUpdated: false,
-  },
-  {
-    id: 2,
+    id: "1",
     userId: "2",
     chatId: "1",
-    content: "Hey Alice!",
-    createdAt: new Date("2024-08-22T10:10:00Z"),
+    content: "Hey there! Welcome to your inbox.",
+    createdAt: new Date("2024-08-24T05:19:00Z"),
     isUpdated: false,
+    readBy: ["1"]
   },
   {
-    id: 3,
-    userId: "2",
+    id: "2",
+    userId: "4",
     chatId: "2",
-    content: "Hi Charlie!",
-    createdAt: new Date("2024-08-23T11:05:00Z"),
+    content: "Hey, I'm not sure about sharing my personal information. Can you guarantee its safety?",
+    createdAt: new Date("2024-08-24T06:19:00Z"),
     isUpdated: false,
+    readBy: ["1", "4"]
   },
   {
-    id: 4,
+    id: "3",
     userId: "3",
     chatId: "2",
-    content: "What's up Bob?",
-    createdAt: new Date("2024-08-23T11:15:00Z"),
+    content: "I understand your initial concerns and thats very valid, Elizabeth. But you can trust us with your data.",
+    createdAt: new Date("2024-08-24T06:30:00Z"),
     isUpdated: false,
+    readBy: ["1", "4"]
   },
   {
-    id: 5,
+    id: "4",
+    userId: "6",
+    chatId: "3",
+    content: "Hi, I need the status of the case. Can you please provide an update?",
+    createdAt: new Date("2024-08-23T06:19:00Z"),
+    isUpdated: false,
+    readBy: ["1", "5"]
+  },
+  {
+    id: "5",
     userId: "1",
     chatId: "3",
-    content: "Hey Charlie!",
-    createdAt: new Date("2024-08-21T09:05:00Z"),
+    content: "No worries. It will be completed ASAP. I’ve asked him yesterday.",
+    createdAt: new Date("2024-08-23T06:30:00Z"),
     isUpdated: false,
+    readBy: ["5", "6"]
   },
   {
-    id: 6,
-    userId: "3",
+    id: "6",
+    userId: "5",
     chatId: "3",
-    content: "Hello Alice!",
-    createdAt: new Date("2024-08-21T09:10:00Z"),
+    content: "Hello Obaidullah, I will be your case advisor for case #029290. I have assigned some homework for you to fill. Please keep up with the due dates. Should you have any questions, you can message me anytime. Thanks.",
+    createdAt: new Date("2024-08-24T03:35:00Z"),
     isUpdated: false,
+    readBy: ["1", "6"]
   },
+  {
+    id: "7",
+    userId: "1",
+    chatId: "3",
+    content: "Please contact Mary for questions regarding the case bcs she will be managing your forms from now on! Thanks Mary.",
+    createdAt: new Date("2024-08-24T06:40:00Z"),
+    isUpdated: false,
+    readBy: ["5", "6"]
+  },
+  {
+    id: "8",
+    userId: "5",
+    chatId: "3",
+    content: "Sure thing, Willson",
+    createdAt: new Date("2024-08-24T06:45:00Z"),
+    isUpdated: false,
+    readBy: ["1", "6"]
+  },
+  {
+    id: "9",
+    userId: "6",
+    chatId: "3",
+    content: "Morning. I’ll try to do them. Thanks",
+    createdAt: new Date("2024-08-24T06:50:00Z"),
+    isUpdated: false,
+    readBy: ["5"]
+  },
+  {
+    id: "10",
+    userId: "3",
+    chatId: "4",
+    content: "Hi, I need the status of the case. Can you please provide an update?",
+    createdAt: new Date("2024-08-23T01:19:00Z"),
+    isUpdated: false,
+    readBy: []
+  },
+  {
+    id: "11",
+    userId: "3",
+    chatId: "4",
+    content: "Please check this out!",
+    createdAt: new Date("2024-08-23T10:20:00Z"),
+    isUpdated: false,
+    readBy: []
+  }
 ];
 
 
@@ -136,9 +201,43 @@ const findLastIndex = (array) => {
 
 // GET chats by user ID (List of chats that the user is involved in)
 app.get("/api/chats/:userId", (req, res) => {
-  const userChats = chats.filter((chat) =>
-    chat.participants.includes(req.params.userId)
-  );
+  const userId = req.params.userId;
+  
+  const userChats = chats
+    .filter(chat => chat.participants.includes(userId))
+    .map(chat => {
+      const participants = chat.participants.map(participantId => {
+        const user = users.find(user => user.id === participantId);
+        return {
+          id: user.id,
+          name: user.name,
+          photo: user.photo
+        };
+      });
+
+      const lastMessage = messages.find(message => message.id === chat.lastMessageId);
+
+      return {
+        id: chat.id,
+        name: chat.name,
+        isGroup: chat.isGroup,
+        participants,
+        lastMessage: {
+          user: users.find(user => user.id === lastMessage.userId).name,
+          content: lastMessage.content,
+          createdAt: lastMessage.createdAt,
+          isUpdated: lastMessage.isUpdated,
+          readBy: lastMessage.readBy.map(readerId => {
+            const user = users.find(user => user.id === readerId);
+            return {
+              id: user.id,
+              name: user.name
+            };
+          })
+        }
+      };
+    });
+
   res.json(formatResponse("success", "Chats retrieved successfully", userChats));
 });
 
