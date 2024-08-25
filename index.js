@@ -246,9 +246,23 @@ app.get("/api/chats/:userId", (req, res) => {
 
 // GET messages by chat ID (Messages within a specific chat)
 app.get("/api/messages/:chatId", (req, res) => {
-  const chatMessages = messages.filter(
-    (message) => message.chatId === req.params.chatId
-  );
+  const chatMessages = messages
+    .filter(message => message.chatId === req.params.chatId)
+    .map(message => {
+      const user = users.find(user => user.id === message.userId);
+      return {
+        id: message.id,
+        user: {
+          id: user.id,
+          name: user.name,
+        },
+        content: message.content,
+        createdAt: message.createdAt,
+        isUpdated: message.isUpdated,
+        readBy: message.readBy,
+      };
+    });
+
   res.json(formatResponse("success", "Messages retrieved successfully", chatMessages));
 });
 
