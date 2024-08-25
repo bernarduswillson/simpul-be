@@ -223,7 +223,10 @@ app.get("/api/chats/:userId", (req, res) => {
         isGroup: chat.isGroup,
         participants,
         lastMessage: {
-          user: users.find(user => user.id === lastMessage.userId).name,
+          user: {
+            id: users.find(user => user.id === lastMessage.userId).id,
+            name: users.find(user => user.id === lastMessage.userId).name
+          },
           content: lastMessage.content,
           createdAt: lastMessage.createdAt,
           isUpdated: lastMessage.isUpdated,
