@@ -41,8 +41,8 @@ const messageModel = {
 };
 
 
-// Dummy Data
-let users = [
+// Initial Data
+const initialUsers = [
   { id: "1", name: "Bernardus Willson", photo: "https://randomuser.me/api/portraits/men/75.jpg" },
   { id: "2", name: "FastVisa Support", photo: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQL4_9GIBfGWXeADnwpndnuJBQWkz98u_xPqQ&s" },
   { id: "3", name: "Cameron Phillips", photo: "https://randomuser.me/api/portraits/men/74.jpg" },
@@ -53,7 +53,7 @@ let users = [
   { id: "8", name: "Jennifer Lopez", photo: "https://randomuser.me/api/portraits/women/73.jpg" }
 ];
 
-let chats = [
+const initialChats = [
   {
     id: "1",
     name: "FastVisa Support",
@@ -84,7 +84,7 @@ let chats = [
   }
 ];
 
-let messages = [
+const initialMessages = [
   {
     id: "1",
     userId: "2",
@@ -185,6 +185,19 @@ let messages = [
     readBy: []
   }
 ];
+
+// Current Data
+let users = [...initialUsers];
+let chats = [...initialChats];
+let messages = [...initialMessages];
+
+// Reset data every 5 minutes
+setInterval(() => {
+  users = [...initialUsers];
+  chats = [...initialChats];
+  messages = [...initialMessages];
+  console.log("Data reset to initial state.");
+}, 5 * 60 * 1000);
 
 
 // Utils
