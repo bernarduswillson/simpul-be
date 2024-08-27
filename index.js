@@ -310,6 +310,12 @@ app.delete("/api/messages/:messageId", (req, res) => {
   const initialLength = messages.length;
   messages = messages.filter((message) => message.id != req.params.messageId);
   if (messages.length < initialLength) {
+    const chat = chats.find(chat => chat.lastMessageId === req.params.messageId);
+    if (chat) {
+      const chatMessages = messages.filter(message => message.chatId === chat.id);
+      const lastMessage = chatMessages[chatMessages.length - 1];
+      chat.lastMessageId = lastMessage ? lastMessage.id : null;
+    }
     res.json(formatResponse("success", "Message deleted successfully", null));
   } else {
     res.status(404).json(formatResponse("error", "Message not found", null));
