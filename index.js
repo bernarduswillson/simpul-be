@@ -288,7 +288,7 @@ app.get("/api/messages/:chatId", (req, res) => {
 // POST a new message (Add a message to a chat by a specific user)
 app.post("/api/messages/:userId/:chatId", (req, res) => {
   const newMessage = {
-    id: findLastIndex(messages) + 1,
+    id: (parseInt(findLastIndex(messages)) + 1).toString(),
     userId: req.params.userId,
     chatId: req.params.chatId,
     content: req.body.content,
