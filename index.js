@@ -27,7 +27,6 @@ const chatModel = {
   name: "string",          // Name of the chat
   isGroup: false,          // Boolean indicating if the chat is a group chat
   participants: ["string"],// Array of user IDs participating in the chat
-  lastMessageId: "string", // ID of the last message in the chat
 };
 
 const messageModel = {
@@ -59,28 +58,24 @@ const initialChats = [
     name: "FastVisa Support",
     isGroup: false,
     participants: ["1", "2"],
-    lastMessageId: "1"
   },
   {
     id: "2",
     name: "8405-Diana SALAZAR MUNGUIA",
     isGroup: true,
     participants: ["1", "3", "4"],
-    lastMessageId: "3"
   },
   {
     id: "3",
     name: "I-589 - AMARKHIL, Obaidullah [Affirmative Filing with ZHN]",
     isGroup: true,
     participants: ["1", "5", "6"],
-    lastMessageId: "9"
   },
   {
     id: "4",
     name: "109220-Naturalization",
     isGroup: true,
     participants: ["1", "3", "7", "8"],
-    lastMessageId: "11"
   }
 ];
 
@@ -194,9 +189,9 @@ let messages = [...initialMessages];
 
 // Reset Data
 const resetData = () => {
-  users = [...initialUsers];
-  chats = [...initialChats];
-  messages = [...initialMessages];
+  users = JSON.parse(JSON.stringify(initialUsers));
+  chats = JSON.parse(JSON.stringify(initialChats));
+  messages = JSON.parse(JSON.stringify(initialMessages));
   console.log("Data reset to initial state.");
 };
 
@@ -222,7 +217,7 @@ const findLastIndex = (array) => {
 // GET chats by user ID (List of chats that the user is involved in)
 app.get("/api/chats/:userId", (req, res) => {
   const userId = req.params.userId;
-  
+
   const userChats = chats
     .filter(chat => chat.participants.includes(userId))
     .map(chat => {
@@ -235,7 +230,8 @@ app.get("/api/chats/:userId", (req, res) => {
         };
       });
 
-      const lastMessage = messages.find(message => message.id === chat.lastMessageId) || null;
+      const chatMessages = messages.filter(message => message.chatId === chat.id);
+      const lastMessage = chatMessages[chatMessages.length - 1] || null;
 
       return {
         id: chat.id,
@@ -263,6 +259,7 @@ app.get("/api/chats/:userId", (req, res) => {
 
   res.json(formatResponse("success", "Chats retrieved successfully", userChats));
 });
+
 
 
 // GET messages by chat ID (Messages within a specific chat)
