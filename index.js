@@ -294,6 +294,7 @@ app.post("/api/messages/:userId/:chatId", (req, res) => {
     content: req.body.content,
     createdAt: new Date(),
     isUpdated: false,
+    readBy: []
   };
   messages.push(newMessage);
   const chat = chats.find(chat => chat.id === req.params.chatId);
@@ -301,7 +302,6 @@ app.post("/api/messages/:userId/:chatId", (req, res) => {
     return res.status(404).json(formatResponse("error", "Chat not found", null));
   }
   const chatMessages = messages.filter(message => message.chatId === chat.id);
-  console.log(chatMessages);
   const lastMessage = chatMessages[chatMessages.length - 1] || null;
   const formattedLastMessage = lastMessage ? {
     chatId: chat.id,
