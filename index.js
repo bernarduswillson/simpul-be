@@ -339,6 +339,21 @@ app.delete("/api/messages/:messageId", (req, res) => {
   }
 });
 
+// PUT a message as read by user ID (Mark a message as read by a specific user)
+app.put("/api/messages/:messageId/read", (req, res) => {
+  const message = messages.find((message) => message.id == req.params.messageId);
+  if (message) {
+    if (!message.readBy.includes(req.body.userId)) {
+      message.readBy.push(req.body.userId);
+      res.json(formatResponse("success", "Message read successfully", message));
+    } else {
+      res.json(formatResponse("error", "Message already read", message));
+    }
+  } else {
+    res.status(404).json(formatResponse("error", "Message not found", null));
+  }
+});
+
 // Start the server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
