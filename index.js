@@ -304,8 +304,9 @@ app.post("/api/messages/:userId/:chatId", (req, res) => {
   const chatMessages = messages.filter(message => message.chatId === chat.id);
   const lastMessage = chatMessages[chatMessages.length - 1] || null;
   const formattedLastMessage = lastMessage ? {
+    id: lastMessage.id,
+    userId: lastMessage.userId,
     chatId: chat.id,
-    user: users.find(user => user.id === lastMessage.userId),
     content: lastMessage.content,
     createdAt: lastMessage.createdAt,
     isUpdated: lastMessage.isUpdated,
