@@ -192,7 +192,7 @@ let chats = [...initialChats];
 let messages = [...initialMessages];
 
 
-// Reset Data every 5 minutes
+// Reset Data
 const resetData = () => {
   users = [...initialUsers];
   chats = [...initialChats];
@@ -200,24 +200,12 @@ const resetData = () => {
   console.log("Data reset to initial state.");
 };
 
-const calculateNextResetDelay = () => {
-  const now = new Date();
-  const minutes = now.getMinutes();
-  const seconds = now.getSeconds();
-  const milliseconds = now.getMilliseconds();
-
-  const minutesUntilNextReset = 5 - (minutes % 5);
-  const millisecondsUntilNextReset = (minutesUntilNextReset * 60 - seconds) * 1000 - milliseconds;
-
-  return millisecondsUntilNextReset;
-};
-
-const startResetInterval = () => {
+// RESET the data to initial state
+app.get("/api/reset", (req, res) => {
   resetData();
-  setInterval(resetData, 5 * 60 * 1000);
-};
+  res.json(formatResponse("success", "Data reset to initial state", null));
+});
 
-setTimeout(startResetInterval, calculateNextResetDelay());
 
 // Utils
 const formatResponse = (status, message, data) => ({
