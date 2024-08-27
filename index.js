@@ -333,11 +333,26 @@ app.delete("/api/messages/:messageId", (req, res) => {
   }
   messages = messages.filter((message) => message.id !== messageId);
   const chat = chats.find((chat) => chat.id === messageToDelete.chatId);
+  if (!chat) {
+    return res.status(404).json(formatResponse("error", "Chat not found", null));
+  }
   const chatMessages = messages.filter((message) => message.chatId === chat.id);
   const lastMessage = chatMessages[chatMessages.length - 1] || null;
   chat.lastMessageId = lastMessage ? lastMessage.id : null;
-  res.json(formatResponse("success", "Message deleted successfully", lastMessage));
+  const formattedLastMessage = lastMessage ? {
+    user: users.find(user => user.id === lastMessage.userId),
+    content: lastMessage.content,
+    createdAt: lastMessage.createdAt,
+    isUpdated: lastMessage.isUpdated,
+    readBy: lastMessage.readBy.map(readerId => ({
+      id: readerId,
+      name: users.find(user => user.id === readerId).name || "Unknown"
+    }))
+  } : null;
+
+  res.json(formatResponse("success", "Message deleted successfully", { lastMessage: formattedLastMessage }));
 });
+
 
 // PUT a message as read by user ID (Mark a message as read by a specific user)
 app.put("/api/messages/:messageId/read", (req, res) => {
