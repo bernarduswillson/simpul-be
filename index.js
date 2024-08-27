@@ -235,16 +235,16 @@ app.get("/api/chats/:userId", (req, res) => {
         };
       });
 
-      const lastMessage = messages.find(message => message.id === chat.lastMessageId);
+      const lastMessage = messages.find(message => message.id === chat.lastMessageId) || null;
 
       return {
         id: chat.id,
         name: chat.name,
         isGroup: chat.isGroup,
         participants,
-        lastMessage: {
+        lastMessage: lastMessage ? {
           user: {
-            id: users.find(user => user.id === lastMessage.userId).id,
+            id: lastMessage.userId,
             name: users.find(user => user.id === lastMessage.userId).name
           },
           content: lastMessage.content,
@@ -257,12 +257,13 @@ app.get("/api/chats/:userId", (req, res) => {
               name: user.name
             };
           })
-        }
+        } : null
       };
     });
 
   res.json(formatResponse("success", "Chats retrieved successfully", userChats));
 });
+
 
 // GET messages by chat ID (Messages within a specific chat)
 app.get("/api/messages/:chatId", (req, res) => {
