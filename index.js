@@ -340,6 +340,7 @@ app.delete("/api/messages/:messageId", (req, res) => {
   const lastMessage = chatMessages[chatMessages.length - 1] || null;
   chat.lastMessageId = lastMessage ? lastMessage.id : null;
   const formattedLastMessage = lastMessage ? {
+    chatId: chat.id,
     user: users.find(user => user.id === lastMessage.userId),
     content: lastMessage.content,
     createdAt: lastMessage.createdAt,
