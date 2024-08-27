@@ -296,7 +296,23 @@ app.post("/api/messages/:userId/:chatId", (req, res) => {
     isUpdated: false,
   };
   messages.push(newMessage);
-  res.status(201).json(formatResponse("success", "Message created successfully", newMessage));
+  const chat = chats.find(chat => chat.id === req.params.chatId);
+  if (!chat) {
+    return res.status(404).json(formatResponse("error", "Chat not found", null));
+  }
+  const chatMessages = messages.filter(message => message.chatId === chat.id);
+  console.log(chatMessages);
+  const lastMessage = chatMessages[chatMessages.length - 1] || null;
+  const formattedLastMessage = lastMessage ? {
+    chatId: chat.id,
+    user: users.find(user => user.id === lastMessage.userId),
+    content: lastMessage.content,
+    createdAt: lastMessage.createdAt,
+    isUpdated: lastMessage.isUpdated,
+    readBy: []
+  } : null;
+
+  res.status(201).json(formatResponse("success", "Message created successfully", { lastMessage: formattedLastMessage }));
 });
 
 // PUT a message by message ID (Edit a specific message)
