@@ -182,24 +182,30 @@ const initialMessages = [
 ];
 
 // Current Data
-let users = [...initialUsers];
-let chats = [...initialChats];
-let messages = [...initialMessages];
+let users = JSON.parse(JSON.stringify(initialUsers));
+let chats = JSON.parse(JSON.stringify(initialChats));
+let messages = JSON.parse(JSON.stringify(initialMessages));
 
 
 // Reset Data
 const resetData = () => {
-  users = JSON.parse(JSON.stringify(initialUsers));
-  chats = JSON.parse(JSON.stringify(initialChats));
-  messages = JSON.parse(JSON.stringify(initialMessages));
+  users = JSON.parse(JSON.stringify(initialUsers)); // Deep copy
+  chats = JSON.parse(JSON.stringify(initialChats)); // Deep copy
+  messages = JSON.parse(JSON.stringify(initialMessages)); // Deep copy
   console.log("Data reset to initial state.");
 };
 
-// RESET the data to initial state
+// API endpoint to reset the data
 app.get("/api/reset", (req, res) => {
+  console.log("Before reset:", { users, chats, messages });
   resetData();
-  res.json(formatResponse("success", "Data reset to initial state", null));
+  console.log("After reset:", { users, chats, messages });
+
+  setTimeout(() => {
+    res.json(formatResponse("success", "Data reset to initial state", null));
+  }, 1000);
 });
+
 
 
 // Utils
