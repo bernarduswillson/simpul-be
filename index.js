@@ -191,14 +191,33 @@ let users = [...initialUsers];
 let chats = [...initialChats];
 let messages = [...initialMessages];
 
-// Reset data every 5 minutes
-setInterval(() => {
+
+// Reset Data every 5 minutes
+const resetData = () => {
   users = [...initialUsers];
   chats = [...initialChats];
   messages = [...initialMessages];
   console.log("Data reset to initial state.");
-}, 5 * 60 * 1000);
+};
 
+const calculateNextResetDelay = () => {
+  const now = new Date();
+  const minutes = now.getMinutes();
+  const seconds = now.getSeconds();
+  const milliseconds = now.getMilliseconds();
+
+  const minutesUntilNextReset = 5 - (minutes % 5);
+  const millisecondsUntilNextReset = (minutesUntilNextReset * 60 - seconds) * 1000 - milliseconds;
+
+  return millisecondsUntilNextReset;
+};
+
+const startResetInterval = () => {
+  resetData();
+  setInterval(resetData, 5 * 60 * 1000);
+};
+
+setTimeout(startResetInterval, calculateNextResetDelay());
 
 // Utils
 const formatResponse = (status, message, data) => ({
