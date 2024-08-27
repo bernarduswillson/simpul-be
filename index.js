@@ -326,17 +326,17 @@ app.put("/api/messages/:messageId", (req, res) => {
 
 // DELETE a message by message ID (Remove a specific message)
 app.delete("/api/messages/:messageId", (req, res) => {
-  const initialLength = messages.length;
-  messages = messages.filter((message) => message.id != req.params.messageId);
-  const chat = chats.find(chat => chat.lastMessageId === req.params.messageId);
-  if (messages.length < initialLength && chat) {
-    const chatMessages = messages.filter(message => message.chatId === chat.id);
-    const lastMessage = chatMessages[chatMessages.length - 1];
-    chat.lastMessageId = lastMessage ? lastMessage.id : null;
-    res.json(formatResponse("success", "Message deleted successfully", lastMessage));
-  } else {
-    res.status(404).json(formatResponse("error", "Message not found", null));
+  const messageId = req.params.messageId;
+  const messageToDelete = messages.find((message) => message.id === messageId);
+  if (!messageToDelete) {
+    return res.status(404).json(formatResponse("error", "Message not found", null));
   }
+  messages = messages.filter((message) => message.id !== messageId);
+  const chat = chats.find((chat) => chat.id === messageToDelete.chatId);
+  const chatMessages = messages.filter((message) => message.chatId === chat.id);
+  const lastMessage = chatMessages[chatMessages.length - 1] || null;
+  chat.lastMessageId = lastMessage ? lastMessage.id : null;
+  res.json(formatResponse("success", "Message deleted successfully", lastMessage));
 });
 
 // PUT a message as read by user ID (Mark a message as read by a specific user)
