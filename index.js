@@ -301,14 +301,36 @@ app.post("/api/messages/:userId/:chatId", (req, res) => {
 // PUT a message by message ID (Edit a specific message)
 app.put("/api/messages/:messageId", (req, res) => {
   const message = messages.find((message) => message.id == req.params.messageId);
+
   if (message) {
     message.content = req.body.content;
     message.isUpdated = true;
-    res.json(formatResponse("success", "Message updated successfully", message));
+
+    const chat = chats.find((chat) => chat.id === message.chatId);
+    if (!chat) {
+      return res.status(404).json(formatResponse("error", "Chat not found", null));
+    }
+
+    const chatMessages = messages.filter((message) => message.chatId === chat.id);
+    const lastMessage = chatMessages[chatMessages.length - 1] || null;
+    const formattedLastMessage = lastMessage ? {
+      chatId: chat.id,
+      user: users.find(user => user.id === lastMessage.userId),
+      content: lastMessage.content,
+      createdAt: lastMessage.createdAt,
+      isUpdated: lastMessage.isUpdated,
+      readBy: lastMessage.readBy.map(readerId => ({
+        id: readerId,
+        name: users.find(user => user.id === readerId).name || "Unknown"
+      }))
+    } : null;
+
+    res.json(formatResponse("success", "Message updated successfully", { lastMessage: formattedLastMessage }));
   } else {
     res.status(404).json(formatResponse("error", "Message not found", null));
   }
 });
+
 
 // DELETE a message by message ID (Remove a specific message)
 app.delete("/api/messages/:messageId", (req, res) => {
