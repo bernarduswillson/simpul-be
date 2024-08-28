@@ -386,19 +386,24 @@ app.delete("/api/messages/:messageId", (req, res) => {
 });
 
 
-// PUT a message as read by user ID (Mark a message as read by a specific user)
-app.put("/api/messages/:messageId/read", (req, res) => {
-  const message = messages.find((message) => message.id == req.params.messageId);
-  if (message) {
-    if (!message.readBy.includes(req.body.userId)) {
-      message.readBy.push(req.body.userId);
-      res.json(formatResponse("success", "Message read successfully", message));
-    } else {
-      res.json(formatResponse("error", "Message already read", message));
-    }
-  } else {
-    res.status(404).json(formatResponse("error", "Message not found", null));
+// PUT a message as read by user ID (Mark all messages in a chat as read by a specific user)
+app.put("/api/messages/:chatId/read/:userId", (req, res) => {
+  const chatId = req.params.chatId;
+  const userId = req.params.userId;
+
+  const chat = chats.find((chat) => chat.id === chatId);
+  if (!chat) {
+    return res.status(404).json(formatResponse("error", "Chat not found", null));
   }
+
+  const chatMessages = messages.filter((message) => message.chatId === chatId);
+  chatMessages.forEach((message) => {
+    if (!message.readBy.includes(userId)) {
+      message.readBy.push(userId);
+    }
+  });
+
+  res.json(formatResponse("success", "Messages marked as read successfully", null));
 });
 
 // Start the server
