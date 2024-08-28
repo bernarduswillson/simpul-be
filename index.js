@@ -278,7 +278,13 @@ app.get("/api/messages/:chatId", (req, res) => {
         content: message.content,
         createdAt: message.createdAt,
         isUpdated: message.isUpdated,
-        readBy: message.readBy,
+        readBy: message.readBy.map(readerId => {
+          const user = users.find(user => user.id === readerId);
+          return {
+            id: user.id,
+            name: user.name
+          };
+        })
       };
     });
 
