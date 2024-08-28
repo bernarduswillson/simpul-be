@@ -181,10 +181,59 @@ const initialMessages = [
   }
 ];
 
+const initialTasks = [
+  {
+    id: 1,
+    userId: 1,
+    name: "Close off Case #012920- RODRIGUES, Amiguel",
+    date: "2024-09-24T05:19:00Z",
+    description: "Closing off this case since this application has been cancelled. No one really understand how this case could possibly be cancelled. The options and the documents within this document were totally a guaranteed for a success!",
+    type: "personal",
+    isDone: false,
+  },
+  {
+    id: 2,
+    userId: 1,
+    name: "Set up documentation report for several Cases : Case 145443, Case 192829 and Case 182203",
+    date: "2024-09-25T05:19:00Z",
+    description: "All Cases must include all payment transactions, all documents and forms filled. All conversations in comments and messages in channels and emails should be provided as well in.",
+    type: "urgent",
+    isDone: false,
+  },
+  {
+    id: 3,
+    userId: 1,
+    name: "Set up appointment with Dr Blake",
+    date: "2024-09-26T05:19:00Z",
+    description: "",
+    type: "personal",
+    isDone: false,
+  },
+  {
+    id: 4,
+    userId: 1,
+    name: "Contact Mr Caleb - video conference?",
+    date: "2024-08-24T05:19:00Z",
+    description: "This is a description",
+    type: "urgent",
+    isDone: true,
+  },
+  {
+    id: 5,
+    userId: 1,
+    name: "Assign 3 homework to Client A",
+    date: "2024-08-10T05:19:00Z",
+    description: "This is a description",
+    type: "personal",
+    isDone: true,
+  },
+];
+
 // Current Data
 let users = JSON.parse(JSON.stringify(initialUsers));
 let chats = JSON.parse(JSON.stringify(initialChats));
 let messages = JSON.parse(JSON.stringify(initialMessages));
+let tasks = JSON.parse(JSON.stringify(initialTasks));
 
 
 // Reset Data
@@ -192,6 +241,7 @@ const resetData = () => {
   users = JSON.parse(JSON.stringify(initialUsers));
   chats = JSON.parse(JSON.stringify(initialChats));
   messages = JSON.parse(JSON.stringify(initialMessages));
+  tasks = JSON.parse(JSON.stringify(initialTasks));
   console.log("Data reset to initial state.");
 };
 
@@ -418,6 +468,18 @@ app.put("/api/messages/:chatId/read/:userId", (req, res) => {
 
   res.json(formatResponse("success", "Messages marked as read successfully", { lastMessage: formattedLastMessage }));
 });
+
+
+
+
+// GET all tasks by user ID (List of tasks assigned to the user)
+app.get("/api/tasks/:userId", (req, res) => {
+  const userId = req.params.userId;
+  const userTasks = tasks.filter((task) => task.userId == userId);
+  res.json(formatResponse("success", "Tasks retrieved successfully", userTasks));
+});
+
+
 
 // Start the server
 const PORT = process.env.PORT || 5000;
