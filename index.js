@@ -403,7 +403,20 @@ app.put("/api/messages/:chatId/read/:userId", (req, res) => {
     }
   });
 
-  res.json(formatResponse("success", "Messages marked as read successfully", null));
+  const lastMessage = chatMessages[chatMessages.length - 1] || null;
+  const formattedLastMessage = lastMessage ? {
+    chatId: chat.id,
+    user: users.find(user => user.id === lastMessage.userId),
+    content: lastMessage.content,
+    createdAt: lastMessage.createdAt,
+    isUpdated: lastMessage.isUpdated,
+    readBy: lastMessage.readBy.map(readerId => ({
+      id: readerId,
+      name: users.find(user => user.id === readerId).name || "Unknown"
+    }))
+  } : null;
+
+  res.json(formatResponse("success", "Messages marked as read successfully", { lastMessage: formattedLastMessage }));
 });
 
 // Start the server
