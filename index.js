@@ -489,12 +489,13 @@ app.get("/api/tasks/:userId", (req, res) => {
   res.json(formatResponse("success", "Tasks retrieved successfully", userTasks));
 });
 
-// UPDATE date or description of a task by task ID
+// UPDATE date, description, or isDone status of a task by task ID
 app.put("/api/tasks/:taskId", (req, res) => {
   const task = tasks.find((task) => task.id == req.params.taskId);
   if (task) {
     task.date = req.body.date || task.date;
     task.description = req.body.description || task.description;
+    task.isDone = req.body.isDone || task.isDone;
     res.json(formatResponse("success", "Task updated successfully", task));
   } else {
     res.status(404).json(formatResponse("error", "Task not found", null));
