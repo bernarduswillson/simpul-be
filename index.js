@@ -39,6 +39,16 @@ const messageModel = {
   readBy: ["string"],      // Array of user IDs who read the message
 };
 
+const taskModel = {
+  id: "string",            // Unique identifier for the task
+  userId: "string",        // ID of the user to whom the task is assigned
+  name: "string",          // Name of the task
+  date: new Date(),        // Due date of the task
+  description: "string",   // Description of the task
+  type: "string",          // Type of the task (e.g., personal, urgent)
+  isDone: false,           // Boolean indicating if the task is completed
+};
+
 
 // Initial Data
 const initialUsers = [
@@ -491,6 +501,16 @@ app.put("/api/tasks/:taskId", (req, res) => {
   }
 });
 
+// DELETE a task by task ID
+app.delete("/api/tasks/:taskId", (req, res) => {
+  const taskId = req.params.taskId;
+  const taskToDelete = tasks.find((task) => task.id == taskId);
+  if (!taskToDelete) {
+    return res.status(404).json(formatResponse("error", "Task not found", null));
+  }
+  tasks = tasks.filter((task) => task.id !== taskId);
+  res.json(formatResponse("success", "Task deleted successfully", null));
+});
 
 
 // Start the server
