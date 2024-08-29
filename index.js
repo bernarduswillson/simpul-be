@@ -502,6 +502,21 @@ app.put("/api/tasks/:taskId", (req, res) => {
   }
 });
 
+// POST a new task
+app.post("/api/tasks", (req, res) => {
+  const newTask = {
+    id: (parseInt(findLastIndex(tasks)) + 1).toString(),
+    userId: req.body.userId,
+    name: "",
+    date: "",
+    description: "",
+    type: "",
+    isDone: false,
+  };
+  tasks.push(newTask);
+  res.status(201).json(formatResponse("success", "Task created successfully", newTask));
+});
+
 // DELETE a task by task ID
 app.delete("/api/tasks/:taskId", (req, res) => {
   const taskId = req.params.taskId;
