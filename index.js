@@ -493,9 +493,9 @@ app.get("/api/tasks/:userId", (req, res) => {
 app.put("/api/tasks/:taskId", (req, res) => {
   const task = tasks.find((task) => task.id == req.params.taskId);
   if (task) {
-    task.date = req.body.date || task.date;
-    task.description = req.body.description || task.description;
-    task.isDone = req.body.isDone || task.isDone;
+    task.date = req.body.date !== undefined ? req.body.date : task.date;
+    task.description = req.body.description !== undefined ? req.body.description : task.description;
+    task.isDone = req.body.isDone !== undefined ? req.body.isDone : task.isDone;
     res.json(formatResponse("success", "Task updated successfully", task));
   } else {
     res.status(404).json(formatResponse("error", "Task not found", null));
