@@ -512,7 +512,7 @@ app.post("/api/tasks", (req, res) => {
     name: "",
     date: "",
     description: "",
-    type: "",
+    type: req.body.type || "personal",
     isDone: false,
   };
   tasks.push(newTask);
