@@ -392,12 +392,21 @@ app.post("/api/messages/:userId/:chatId", (req, res) => {
     readBy: []
   };
   messages.push(newMessage);
+
   const chat = chats.find(chat => chat.id === req.params.chatId);
   if (!chat) {
     return res.status(404).json(formatResponse("error", "Chat not found", null));
   }
+
+  messages.forEach(message => {
+    if (message.chatId === chat.id && !message.readBy.includes(req.params.userId)) {
+      message.readBy.push(req.params.userId);
+    }
+  });
+
   const chatMessages = messages.filter(message => message.chatId === chat.id);
   const lastMessage = chatMessages[chatMessages.length - 1] || null;
+
   const formattedLastMessage = lastMessage ? {
     id: lastMessage.id,
     user: users.find(user => user.id === lastMessage.userId),
@@ -409,11 +418,12 @@ app.post("/api/messages/:userId/:chatId", (req, res) => {
     } : null,
     createdAt: lastMessage.createdAt,
     isUpdated: lastMessage.isUpdated,
-    readBy: []
+    readBy: lastMessage.readBy
   } : null;
 
   res.status(201).json(formatResponse("success", "Message created successfully", { lastMessage: formattedLastMessage }));
 });
+
 
 // PUT a message by message ID (Edit a specific message)
 app.put("/api/messages/:messageId", (req, res) => {
