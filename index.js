@@ -35,6 +35,7 @@ const messageModel = {
   chatId: "string",        // ID of the chat where the message was sent
   content: "string",       // Content of the message
   createdAt: new Date(),   // Date when the message was created
+  repliedTo: "string",     // ID of the message to which this message is a reply
   isUpdated: false,        // Boolean indicating if the message was updated
   readBy: ["string"],      // Array of user IDs who read the message
 };
@@ -96,6 +97,7 @@ const initialMessages = [
     chatId: "1",
     content: "Hey there! Welcome to your inbox.",
     createdAt: new Date("2024-08-24T05:19:00Z"),
+    repliedTo: null,
     isUpdated: false,
     readBy: ["1"]
   },
@@ -105,6 +107,7 @@ const initialMessages = [
     chatId: "2",
     content: "Hey, I'm not sure about sharing my personal information. Can you guarantee its safety?",
     createdAt: new Date("2024-08-24T06:19:00Z"),
+    repliedTo: null,
     isUpdated: false,
     readBy: ["1", "4"]
   },
@@ -114,6 +117,7 @@ const initialMessages = [
     chatId: "2",
     content: "I understand your initial concerns and thats very valid, Elizabeth. But you can trust us with your data.",
     createdAt: new Date("2024-08-24T06:30:00Z"),
+    repliedTo: null,
     isUpdated: false,
     readBy: ["1", "4"]
   },
@@ -123,6 +127,7 @@ const initialMessages = [
     chatId: "3",
     content: "Hi, I need the status of the case. Can you please provide an update?",
     createdAt: new Date("2024-08-23T06:19:00Z"),
+    repliedTo: null,
     isUpdated: false,
     readBy: ["1", "5"]
   },
@@ -132,6 +137,7 @@ const initialMessages = [
     chatId: "3",
     content: "No worries. It will be completed ASAP. I’ve asked him yesterday.",
     createdAt: new Date("2024-08-23T06:30:00Z"),
+    repliedTo: null,
     isUpdated: false,
     readBy: ["5", "6"]
   },
@@ -141,6 +147,7 @@ const initialMessages = [
     chatId: "3",
     content: "Hello Obaidullah, I will be your case advisor for case #029290. I have assigned some homework for you to fill. Please keep up with the due dates. Should you have any questions, you can message me anytime. Thanks.",
     createdAt: new Date("2024-08-24T03:35:00Z"),
+    repliedTo: null,
     isUpdated: false,
     readBy: ["1", "6"]
   },
@@ -150,6 +157,7 @@ const initialMessages = [
     chatId: "3",
     content: "Please contact Mary for questions regarding the case bcs she will be managing your forms from now on! Thanks Mary.",
     createdAt: new Date("2024-08-24T06:40:00Z"),
+    repliedTo: "6",
     isUpdated: false,
     readBy: ["5", "6"]
   },
@@ -159,6 +167,7 @@ const initialMessages = [
     chatId: "3",
     content: "Sure thing, Willson",
     createdAt: new Date("2024-08-24T06:45:00Z"),
+    repliedTo: null,
     isUpdated: false,
     readBy: ["1", "6"]
   },
@@ -168,6 +177,7 @@ const initialMessages = [
     chatId: "3",
     content: "Morning. I’ll try to do them. Thanks",
     createdAt: new Date("2024-08-24T06:50:00Z"),
+    repliedTo: null,
     isUpdated: false,
     readBy: ["5"]
   },
@@ -177,6 +187,7 @@ const initialMessages = [
     chatId: "4",
     content: "Hi, I need the status of the case. Can you please provide an update?",
     createdAt: new Date("2024-08-23T01:19:00Z"),
+    repliedTo: null,
     isUpdated: false,
     readBy: []
   },
@@ -186,6 +197,7 @@ const initialMessages = [
     chatId: "4",
     content: "Please check this out!",
     createdAt: new Date("2024-08-23T10:20:00Z"),
+    repliedTo: null,
     isUpdated: false,
     readBy: []
   }
@@ -305,6 +317,11 @@ app.get("/api/chats/:userId", (req, res) => {
             name: users.find(user => user.id === lastMessage.userId).name
           },
           content: lastMessage.content,
+          repliedTo: lastMessage.repliedTo ? {
+            id: lastMessage.repliedTo,
+            name: users.find(user => user.id === messages.find(msg => msg.id === lastMessage.repliedTo).userId).name,
+            content: messages.find(msg => msg.id === lastMessage.repliedTo).content
+          } : null,
           createdAt: lastMessage.createdAt,
           isUpdated: lastMessage.isUpdated,
           readBy: lastMessage.readBy.map(readerId => {
@@ -337,6 +354,11 @@ app.get("/api/messages/:chatId", (req, res) => {
         },
         content: message.content,
         createdAt: message.createdAt,
+        repliedTo: {
+          id: message.repliedTo,
+          name: message.repliedTo ? users.find(user => user.id === messages.find(msg => msg.id === message.repliedTo).userId).name : null,
+          content: message.repliedTo ? messages.find(msg => msg.id === message.repliedTo).content : null
+        },
         isUpdated: message.isUpdated,
         readBy: message.readBy.map(readerId => {
           const user = users.find(user => user.id === readerId);
@@ -358,7 +380,8 @@ app.post("/api/messages/:userId/:chatId", (req, res) => {
     userId: req.params.userId,
     chatId: req.params.chatId,
     content: req.body.content,
-    createdAt: new Date(),
+    createdAt: new Date().toISOString(),
+    repliedTo: req.body.repliedTo || null,
     isUpdated: false,
     readBy: []
   };
@@ -373,6 +396,11 @@ app.post("/api/messages/:userId/:chatId", (req, res) => {
     id: lastMessage.id,
     user: users.find(user => user.id === lastMessage.userId),
     content: lastMessage.content,
+    repliedTo: lastMessage.repliedTo ? {
+      id: lastMessage.repliedTo,
+      name: users.find(user => user.id === messages.find(msg => msg.id === lastMessage.repliedTo).userId).name,
+      content: messages.find(msg => msg.id === lastMessage.repliedTo).content
+    } : null,
     createdAt: lastMessage.createdAt,
     isUpdated: lastMessage.isUpdated,
     readBy: []
@@ -400,6 +428,11 @@ app.put("/api/messages/:messageId", (req, res) => {
       chatId: chat.id,
       user: users.find(user => user.id === lastMessage.userId),
       content: lastMessage.content,
+      repliedTo: lastMessage.repliedTo ? {
+        id: lastMessage.repliedTo,
+        name: users.find(user => user.id === messages.find(msg => msg.id === lastMessage.repliedTo).userId).name,
+        content: messages.find(msg => msg.id === lastMessage.repliedTo).content
+      } : null,
       createdAt: lastMessage.createdAt,
       isUpdated: lastMessage.isUpdated,
       readBy: lastMessage.readBy.map(readerId => ({
@@ -434,6 +467,11 @@ app.delete("/api/messages/:messageId", (req, res) => {
     chatId: chat.id,
     user: users.find(user => user.id === lastMessage.userId),
     content: lastMessage.content,
+    repliedTo: lastMessage.repliedTo ? {
+      id: lastMessage.repliedTo,
+      name: users.find(user => user.id === messages.find(msg => msg.id === lastMessage.repliedTo).userId).name,
+      content: messages.find(msg => msg.id === lastMessage.repliedTo).content
+    } : null,
     createdAt: lastMessage.createdAt,
     isUpdated: lastMessage.isUpdated,
     readBy: lastMessage.readBy.map(readerId => ({
@@ -468,6 +506,11 @@ app.put("/api/messages/:chatId/read/:userId", (req, res) => {
     chatId: chat.id,
     user: users.find(user => user.id === lastMessage.userId),
     content: lastMessage.content,
+    repliedTo: lastMessage.repliedTo ? {
+      id: lastMessage.repliedTo,
+      name: users.find(user => user.id === messages.find(msg => msg.id === lastMessage.repliedTo).userId).name,
+      content: messages.find(msg => msg.id === lastMessage.repliedTo).content
+    } : null,
     createdAt: lastMessage.createdAt,
     isUpdated: lastMessage.isUpdated,
     readBy: lastMessage.readBy.map(readerId => ({
