@@ -197,7 +197,7 @@ const initialMessages = [
     userId: "3",
     chatId: "4",
     content: "Please check this out!",
-    createdAt: new Date("2024-08-23T10:20:00Z"),
+    createdAt: new Date("2024-08-25T10:20:00Z"),
     repliedTo: null,
     isUpdated: false,
     readBy: []
