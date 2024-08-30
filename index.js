@@ -46,6 +46,7 @@ const taskModel = {
   name: "string",          // Name of the task
   date: new Date(),        // Due date of the task
   description: "string",   // Description of the task
+  tags: ["string"],        // Array of tag ids associated with the task
   type: "string",          // Type of the task (e.g., personal, urgent)
   isDone: false,           // Boolean indicating if the task is completed
 };
@@ -210,6 +211,7 @@ const initialTasks = [
     name: "Close off Case #012920- RODRIGUES, Amiguel",
     date: "2024-09-24T05:19:00Z",
     description: "Closing off this case since this application has been cancelled. No one really understand how this case could possibly be cancelled. The options and the documents within this document were totally a guaranteed for a success!",
+    tags: ["1", "2", "3"],
     type: "personal",
     isDone: false,
   },
@@ -219,6 +221,7 @@ const initialTasks = [
     name: "Set up documentation report for several Cases : Case 145443, Case 192829 and Case 182203",
     date: "2024-09-25T05:19:00Z",
     description: "All Cases must include all payment transactions, all documents and forms filled. All conversations in comments and messages in channels and emails should be provided as well in.",
+    tags: ["5", "6", "7"],
     type: "urgent",
     isDone: false,
   },
@@ -228,6 +231,7 @@ const initialTasks = [
     name: "Set up appointment with Dr Blake",
     date: "2024-09-26T05:19:00Z",
     description: "",
+    tags: ["3", "4"],
     type: "personal",
     isDone: false,
   },
@@ -237,6 +241,7 @@ const initialTasks = [
     name: "Contact Mr Caleb - video conference?",
     date: "2024-08-24T05:19:00Z",
     description: "This is a description",
+    tags: [],
     type: "urgent",
     isDone: true,
   },
@@ -246,6 +251,7 @@ const initialTasks = [
     name: "Assign 3 homework to Client A",
     date: "2024-08-10T05:19:00Z",
     description: "This is a description",
+    tags: [],
     type: "personal",
     isDone: true,
   },
@@ -539,6 +545,7 @@ app.put("/api/tasks/:taskId", (req, res) => {
     task.name = req.body.name !== undefined ? req.body.name : task.name;
     task.date = req.body.date !== undefined ? req.body.date : task.date;
     task.description = req.body.description !== undefined ? req.body.description : task.description;
+    task.tags = req.body.tags !== undefined ? req.body.tags : task.tags;
     task.type = req.body.type !== undefined ? req.body.type : task.type;
     task.isDone = req.body.isDone !== undefined ? req.body.isDone : task.isDone;
     res.json(formatResponse("success", "Task updated successfully", task));
@@ -555,6 +562,7 @@ app.post("/api/tasks", (req, res) => {
     name: "",
     date: "",
     description: "",
+    tags: [],
     type: req.body.type || "personal",
     isDone: false,
   };
