@@ -187,7 +187,7 @@ const initialMessages = [
     userId: "3",
     chatId: "4",
     content: "Hi, I need the status of the case. Can you please provide an update?",
-    createdAt: new Date("2024-08-23T01:19:00Z"),
+    createdAt: new Date("2024-08-25T01:19:00Z"),
     repliedTo: null,
     isUpdated: false,
     readBy: []
